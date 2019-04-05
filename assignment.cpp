@@ -64,14 +64,21 @@ float vx[N] = {0,0,0,1.1,1.2,1.25,1.3,1.4,1.5,1.55,1.65,1.7,1.72,1.74,1.7,1.68,1
 float vy[N] = {0,0,0.2,0.4,0.5,0.7,0.8,0.9,1.1,1.5,2.5,3,3.2,3.5,3.7,3.8,3.9,4,4.1,4.1,4.3,4.4,4.5,4.6,4.7};
 float vz[N] = {0};
 
-float getCarDist(){// here
+float getCarDist(){
+    /*
+ * experimental 
+ * just returns the distance from the player to the car to check if the car can be entered
+ */
     float xdif = carposx - eye_x;
     float zdif = carposz - eye_z;
     float totaldiff = sqrt((xdif*xdif)+(zdif*zdif));
     return totaldiff;
 }
-
-float getGaryDist(){// here
+float getGaryDist(){
+    /*
+ * experimental 
+ * just returns the disctance to the snail from the car so garry can be run over
+ */
     float xdif = carposx - ((int)garryposx / 1000);
     printf("x:%f\n",xdif);
     float zdif = carposz - ((int)garryposz / 1000);
@@ -79,8 +86,10 @@ float getGaryDist(){// here
     float totaldiff = sqrt((xdif*xdif)+(zdif*zdif));
     return totaldiff;
 }
-
 void carTimer(){
+    /*
+ * this is the car you can drive and is controled when modiying the velocity values
+ */
     carposx -= carspeed * cos(carrot);
     carposz -= carspeed * sin(carrot);
     
@@ -102,6 +111,9 @@ void carTimer(){
 }
 
 void carTimer2(){
+    /*
+ * this is the car you cannot drive
+ */
     carposx2 -= carspeed2 * cos(carrot2);
     carposz2 -= carspeed2 * sin(carrot2);
     
@@ -122,8 +134,13 @@ void carTimer2(){
     
 
 }
-//--------------------------------------------------------------------------------
+
 void timer(int value){
+    /*
+ * main timer 
+ * every time it ticks it will call both car timers
+ * it alo moves the snail, spongebob and the bubbles but at different rates
+ */
     carTimer();
     carTimer2();
     
@@ -157,6 +174,7 @@ void timer(int value){
             garryrot = 45;
         }
     }
+    
     
     
 for(int i = 0; i < bubbles; i++){
@@ -218,7 +236,12 @@ glutPostRedisplay();
 glutTimerFunc(2, timer, 0);
 }
 //--------------------------------------------------------------------------------
+
 void loadTexture(){
+    /*
+ * loads all textures and gives them all ids put in the txId array
+ * 
+ */
     
 	glGenTextures(8, txId); 	// Create 2 texture ids
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
@@ -280,8 +303,14 @@ void loadTexture(){
 
 }
 //--------------------------------------------------------------------------------
+
+
 void special(int key, int x, int y){
-    
+    /*
+ * this is for arrow key movement 
+ * it is undesiarble as it does not support multi key movement
+ * 
+ * */
     
 	if(key == GLUT_KEY_LEFT) {
         if (camerastate == 1){
@@ -323,6 +352,9 @@ void special(int key, int x, int y){
 }
 //--------------------------------------------------------------------------------
 void skybox(){
+    /* renders skybox
+     * 
+     */
     glDisable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 
@@ -378,6 +410,9 @@ void skybox(){
 }
 //--------------------------------------------------------------------------------
 void drawbubbles(){
+    /*
+     * draws bubbles which follow a sine curve in the time funciton
+     */
         
         glDisable(GL_TEXTURE_2D);
         glColor3ub(20,255,255);
@@ -395,6 +430,10 @@ void drawbubbles(){
 }
 //--------------------------------------------------------------------------------
 void spongebob(){
+    /*
+     * renders spongebob 
+     * his movement and poosition is defoined in the timer funciton
+     */
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
 
@@ -468,6 +507,10 @@ void spongebob(){
 }
 //--------------------------------------------------------------------------------
 void walls(){
+    /*
+     * draws walls
+     */
+     
     glBindTexture(GL_TEXTURE_2D, txId[0]);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	
  	glBegin(GL_QUADS);
@@ -505,6 +548,12 @@ void walls(){
 }
 //--------------------------------------------------------------------------------
 void floor(){
+    /*
+     * draws floors
+     * split into many quads for better ligting
+     * can be increased but may add load to already stressed gpu
+     * 
+     */
     
       glBindTexture(GL_TEXTURE_2D, txId[1]);
   glBegin(GL_QUADS);
@@ -538,6 +587,9 @@ void floor(){
 }
 //--------------------------------------------------------------------------------
 void road(){
+    /*draws the road
+     * split into many strips to render better lighting
+     */
     glDisable(GL_TEXTURE_2D);
     glColor3ub(40,40,60);
     for(int i = 0; i < 6000; i ++){
@@ -551,6 +603,10 @@ void road(){
 }
 //--------------------------------------------------------------------------------
 void squidwardsHouse(){
+    /*
+     * draws squidwards house 
+     * uses many glut and glu objects
+     */
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
         glColor3ub(60,80,100);
@@ -700,6 +756,7 @@ void squidwardsHouse(){
 } 
 //--------------------------------------------------------------------------------
 void patrickshouse(){
+    //draws patcicks house
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
         glColor3ub(139,69,19);
@@ -711,6 +768,10 @@ void patrickshouse(){
 }
 //--------------------------------------------------------------------------------
 void treasurechest(){
+    /* draws treasure chest 
+     * movement is defined in the timer funciton
+     * 
+     */
     
     glEnable(GL_TEXTURE_2D);
      
@@ -749,10 +810,11 @@ void treasurechest(){
 }
 //--------------------------------------------------------------------------------
 void garry (){
-    printf("garry ded %f\n",getGaryDist());
-    if(getGaryDist() < 20){
-    printf("garry ded %f\n",getGaryDist());    
-    }
+    /*
+     * draws garry 
+     * movement is defined in timer function
+     * where he moves to is random
+     */
     
     glDisable(GL_TEXTURE_2D);
     glPushMatrix();
@@ -814,6 +876,11 @@ void garry (){
 }
 //--------------------------------------------------------------------------------
 void car(){
+    /*
+     *draws playable car 
+     * movement and control is not deifned here but instead is just renderd to wher it is supposed to be
+     * 
+     */
     
     
         float lgt_pos2[] = {-4,3,0, 1.0f};
@@ -901,7 +968,9 @@ void car(){
 }
 
 void car2(){
-    
+    /*
+     * draws non playable car
+     */
     
         float lgt_pos2[] = {-4,3,0, 1.0f};
         float lgt_pos2DIR[] = {-3,-1,0};
@@ -1002,6 +1071,9 @@ void normal(float x1, float y1, float z1,
 //--------------------------------------------------------------------------------
 
 void spongeBobsHouse(){
+    /* draws spongebobs house which uses plane of rotation
+     * the points can be found in a const at the top of the file
+     */
 	float wx[N], wy[N], wz[N]; 
 	float angleStep = -0.174532922;  //Rotate 10 degrees
 	glColor4f (1.0, 0.75, 0.5, 1.0); 
@@ -1067,6 +1139,8 @@ void spongeBobsHouse(){
 }	
 //--------------------------------------------------------------------------------
 void streetlight(){
+    //draw street light
+    //lighting is defined elsewhere
     glColor3ub(100,100,100);
     glPushMatrix();
     float lgt_pos2[] = {0,5,2, 1.0f};
@@ -1106,6 +1180,9 @@ void streetlight(){
 glPopMatrix();    
 }
 void initialise(){ 
+    /*itinialise is only called at the start
+     * only set basic parameters that do not need to be changed
+     */
     
 	loadTexture();
 	glEnable(GL_DEPTH_TEST);
@@ -1126,6 +1203,16 @@ void initialise(){
 }
 //--------------------------------------------------------------------------------
 void display() {
+    /*
+     * controls cmera movenet and calls all render functions
+     * 
+     * first calculates where the camera will be
+     * and then where the car will be
+     * then checks if there are keys currently being held down
+     * if so it will increase the velocity of the car or move the player
+     * 
+     * then calls all the draw functions and renders the scene
+     */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1140,7 +1227,7 @@ void display() {
         }
 
     
-	    if (camerastate == 2){
+	    if (camerastate == 2){// user is in driving mode
         //eye_z = -4;
         //eye_x = carposx + 7;
         eye_y = 1.6;
@@ -1180,7 +1267,7 @@ void display() {
                 carRotobj = carrot + 0.05;
         }        
         
-        } else if (camerastate == 1){
+        } else if (camerastate == 1){ // user is in fiurst person mode
             
         eye_y = 0;
             
@@ -1288,15 +1375,24 @@ void display() {
 //--------------------------------------------------------------------------------
 
 
-
+/*
+ * if a key is pressed ie(w,a,s,d) the key dictionary will register that key being pressed
+ * if a key is released it will remove it from the dictoinary\
+ * in the display function we check if it is being pressed and act accoringly
+ */
 void keyPressed (unsigned char key, int x, int y) {
 keyStates[key] = true;
 } 
 void keyUp (unsigned char key, int x, int y) { 
 keyStates[key] = false;
 }  
+
+
 int main(int argc, char** argv)
 {
+    /*main runs everything and sets everything up 
+     * also sets window to widescreen instead of square making project look alot nicer
+     */
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB| GLUT_DEPTH);
     glutInitWindowSize (1066, 600); 
